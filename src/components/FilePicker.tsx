@@ -26,9 +26,6 @@ const FilePicker: React.FC<FilePickerProps> = ({
     try {
       const data = await onFetchData(directoryId);
       setItems(data);
-      onSelectionChange(Array.from(selectedItems).map(id => 
-        data.find(item => item.id === id)
-      ).filter(Boolean) as FileItem[]);
     } catch (err) {
       const error = err as Error;
       setError(error.message);
@@ -36,7 +33,7 @@ const FilePicker: React.FC<FilePickerProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [onFetchData, onError, selectedItems]);
+  }, [onFetchData, onError]);
 
   useEffect(() => {
     fetchItems('root');
@@ -67,6 +64,8 @@ const FilePicker: React.FC<FilePickerProps> = ({
       newSelected.add(item.id);
     }
     setSelectedItems(newSelected);
+    
+    // Update selected items without fetching new data
     onSelectionChange(
       Array.from(newSelected).map(id => 
         items.find(item => item.id === id)
