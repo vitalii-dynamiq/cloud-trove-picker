@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { format } from 'date-fns';
 import { ChevronRight, Folder, File, FileText, FileImage, FileVideo, FileAudio, AlertCircle, Loader2 } from 'lucide-react';
@@ -91,20 +90,24 @@ const FilePicker: React.FC<FilePickerProps> = ({
     fetchItems('root');
   }, [fetchItems]);
 
-  const handleItemClick = async (item: FileItem) => {
+  const handleItemClick = async (e: React.MouseEvent, item: FileItem) => {
+    e.preventDefault(); // Prevent default behavior
     if (item.isDirectory) {
       setBreadcrumbs(prev => [...prev, { id: item.id, name: item.name }]);
       await fetchItems(item.id);
     }
   };
 
-  const handleBreadcrumbClick = async (index: number) => {
+  const handleBreadcrumbClick = async (e: React.MouseEvent, index: number) => {
+    e.preventDefault(); // Prevent default behavior
     const newBreadcrumbs = breadcrumbs.slice(0, index + 1);
     setBreadcrumbs(newBreadcrumbs);
     await fetchItems(newBreadcrumbs[newBreadcrumbs.length - 1].id);
   };
 
-  const handleCheckboxChange = (item: FileItem) => {
+  const handleCheckboxChange = (e: React.MouseEvent, item: FileItem) => {
+    e.preventDefault(); // Prevent default behavior
+    e.stopPropagation(); // Prevent event bubbling
     const newSelected = new Set(selectedItems);
     if (newSelected.has(item.id)) {
       newSelected.delete(item.id);
@@ -136,7 +139,7 @@ const FilePicker: React.FC<FilePickerProps> = ({
           <React.Fragment key={crumb.id}>
             {index > 0 && <ChevronRight className="w-4 h-4 text-gray-400" />}
             <button
-              onClick={() => handleBreadcrumbClick(index)}
+              onClick={(e) => handleBreadcrumbClick(e, index)}
               className={cn(
                 "text-sm px-2 py-1 rounded-md transition-colors",
                 index === breadcrumbs.length - 1
@@ -170,13 +173,10 @@ const FilePicker: React.FC<FilePickerProps> = ({
                   "group flex items-center px-4 py-2 gap-3",
                   "hover:bg-gray-50 transition-colors cursor-pointer"
                 )}
-                onClick={() => handleItemClick(item)}
+                onClick={(e) => handleItemClick(e, item)}
               >
                 <div 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleCheckboxChange(item);
-                  }}
+                  onClick={(e) => handleCheckboxChange(e, item)}
                   className={cn(
                     "w-5 h-5 rounded border transition-colors",
                     "flex items-center justify-center",
