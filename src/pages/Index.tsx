@@ -1,5 +1,5 @@
 
-import { FilePicker } from "@/components/FilePicker";
+import FilePicker from "@/components/FilePicker";
 
 // Mock data and functions for demonstration
 const mockData = {
